@@ -24,7 +24,7 @@ using namespace std::chrono_literals;
 class server : public rclcpp::Node
 {
   public:
-  server() : Node("sc_client_server")
+  server() : Node("sc3_gw_server")
   {
     this->declare_parameter<int>("port" , 64201);
     this->declare_parameter<std::string>("nic" , "lo");
@@ -44,14 +44,14 @@ class server : public rclcpp::Node
 
     get_ip(param_nic);
 
-    pub_joy_ = this->create_publisher<sensor_msgs::msg::Joy>("sc_client/joy" , 1);
-    pub_smart_ui_ = this->create_publisher<sensor_msgs::msg::Joy>("sc_client/SmartUI" , 1);
+    pub_joy_ = this->create_publisher<sensor_msgs::msg::Joy>("sc3_gw/joy" , 1);
+    pub_smart_ui_ = this->create_publisher<sensor_msgs::msg::Joy>("sc3_gw/SmartUI" , 1);
 
     sub_smartui_info = this->create_subscription<std_msgs::msg::String>(
-      "sc_client/info" , 10 , std::bind(&server::smartui_info_callback, this , _1)
+      "sc3_gw/info" , 10 , std::bind(&server::smartui_info_callback, this , _1)
     );
     sub_smartui_error = this->create_subscription<std_msgs::msg::String>(
-      "sc_client/error" , 10 , std::bind(&server::smartui_error_callback, this , _1)
+      "sc3_gw/error" , 10 , std::bind(&server::smartui_error_callback, this , _1)
     );
 
     rcv_sock = socket(AF_INET, SOCK_DGRAM, 0);
@@ -101,7 +101,7 @@ class server : public rclcpp::Node
 
         char cmpData_whatIsYourNode[] = "REQNODEPARAM";
         if(strcmp(buf , cmpData_whatIsYourNode) == 0){
-          char buf_send[] = "MYNODEISsc_client/server";
+          char buf_send[] = "MYNODEISsc3_gw/server";
           sendto(send_socket, buf_send, strlen(buf_send), 0, (struct sockaddr *)&send_addr, sizeof(send_addr));
 
           rclcpp::sleep_for(100ms);
